@@ -9,8 +9,12 @@ import {
   Mail, 
   MessageSquare,
   Wrench,
-  Clock
+  Clock,
+  MapPin
 } from 'lucide-react';
+import { db } from '../lib/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { handleFirestoreError, OperationType } from '../lib/firebaseUtils';
 
 export default function BookingForm() {
   const [formData, setFormData] = useState({
@@ -18,19 +22,29 @@ export default function BookingForm() {
     phone: '',
     email: '',
     service: '',
+    address: '',
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    
+    try {
+      const leadsCol = collection(db, 'leads');
+      await addDoc(leadsCol, {
+        ...formData,
+        status: 'New',
+        createdAt: serverTimestamp()
+      });
       setIsSubmitted(true);
-    }, 1500);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, 'leads');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const services = [
@@ -176,6 +190,21 @@ export default function BookingForm() {
                               {s}
                             </button>
                           ))}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-sm font-bold text-slate-700 ml-1">Service Address</label>
+                        <div className="relative">
+                          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                          <input 
+                            type="text" 
+                            required
+                            placeholder="123 Plumbing St, City"
+                            className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-primary-100 focus:border-primary-500 transition-all outline-none"
+                            value={formData.address}
+                            onChange={(e) => setFormData({...formData, address: e.target.value})}
+                          />
                         </div>
                       </div>
 

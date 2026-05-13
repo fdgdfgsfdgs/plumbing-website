@@ -12,10 +12,48 @@ import BookingForm from './components/BookingForm';
 import AreasServed from './components/AreasServed';
 import Footer from './components/Footer';
 import WhatsAppButton from './components/WhatsAppButton';
+import AdminDashboard from './components/AdminDashboard';
+import AdminLogin from './components/AdminLogin';
 import { Shield, Clock, CheckCircle, ChevronRight } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useState, useEffect } from 'react';
+import { auth } from './lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export default function App() {
+  const [view, setView] = useState<'home' | 'admin'>('home');
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    // Basic hash-based "routing" for the agent to navigate easily
+    const handleHash = () => {
+      if (window.location.hash === '#admin') {
+        setView('admin');
+      } else {
+        setView('home');
+      }
+    };
+    window.addEventListener('hashchange', handleHash);
+    handleHash();
+    
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+    });
+    
+    return () => {
+      window.removeEventListener('hashchange', handleHash);
+      unsubscribe();
+    };
+  }, []);
+
+  if (view === 'admin') {
+    return (
+      <div className="min-h-screen bg-slate-50 selection:bg-primary-100 selection:text-primary-900">
+        {!user ? <AdminLogin /> : <AdminDashboard />}
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen font-sans selection:bg-primary-100 selection:text-primary-900">
       <Navbar />

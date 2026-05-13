@@ -44,6 +44,7 @@ export default function Footer() {
               <li><a href="#testimonials" className="hover:text-primary-400 transition-colors">Customer Reviews</a></li>
               <li><a href="#areas" className="hover:text-primary-400 transition-colors">Areas We Serve</a></li>
               <li><a href="#booking" className="hover:text-primary-400 transition-colors">Book Online</a></li>
+              <li><a href="#admin" className="hover:text-primary-400 transition-colors">Admin Dashboard</a></li>
             </ul>
           </div>
 

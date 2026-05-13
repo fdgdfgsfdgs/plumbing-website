@@ -1,0 +1,40 @@
+{
+  "entities": {
+    "Lead": {
+      "title": "Lead",
+      "description": "A customer inquiry or booking request.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Customer's full name" },
+        "phone": { "type": "string", "description": "Customer's phone number" },
+        "email": { "type": "string", "description": "Customer's email address" },
+        "service": { "type": "string", "description": "Requested plumbing service" },
+        "message": { "type": "string", "description": "Detailed description of the issue" },
+        "address": { "type": "string", "description": "Customer's home address" },
+        "status": { 
+          "type": "string", 
+          "enum": ["New", "Contacted", "Booked", "Closed"],
+          "description": "Current status of the lead"
+        },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "phone", "service", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/leads/{leadId}": {
+      "schema": "Lead",
+      "description": "Collection of all customer leads."
+    },
+    "/admins/{userId}": {
+      "schema": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string" }
+        }
+      },
+      "description": "Collection of admin users who can access the dashboard."
+    }
+  }
+}
